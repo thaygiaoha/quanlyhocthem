@@ -23,18 +23,20 @@ const Dashboard: React.FC<DashboardProps> = ({ data }) => {
   
   // Tính tổng tiền dựa trên số buổi điểm danh thực tế và biểu phí đã cài đặt
   // Đoạn code tính totalRevenue trong Dashboard.tsx
-const totalRevenue = classSheets.reduce((acc, sheet) => {
-  const classConfig = data.fees.find(f => f.className === sheet.className);
-  const unitFee = classConfig ? classConfig.fee : 0;
+// Tính tổng tiền thông minh: Lấy số buổi điểm danh nhân với biểu phí từng lớp
+  const totalRevenue = classSheets.reduce((acc, sheet) => {
+    // Tìm đơn giá học phí của lớp này trong bảng fees
+    const classConfig = data.fees.find(f => f.className === sheet.className);
+    const unitFee = classConfig ? classConfig.fee : 0;
 
-  const classTotal = sheet.students?.reduce((sAcc, s) => {
-    const attendedCount = s.attendance ? s.attendance.filter(v => v === 1).length : 0;
-    return sAcc + (attendedCount * unitFee);
-  }, 0) || 0;
+    const classTotal = sheet.students?.reduce((sAcc, s) => {
+      // Đếm số buổi có giá trị là 1 trong mảng attendance của từng học sinh
+      const attendedCount = s.attendance ? s.attendance.filter(v => v === 1).length : 0;
+      return sAcc + (attendedCount * unitFee);
+    }, 0) || 0;
 
-  return acc + classTotal;
-}, 0);
-
+    return acc + classTotal;
+  }, 0);
   const stats = [
     { label: 'Tổng học sinh', value: totalStudents, icon: Users, color: 'text-blue-600', bg: 'bg-blue-50' },
     { label: 'Số lớp học', value: activeClasses.length, icon: BookOpen, color: 'text-emerald-600', bg: 'bg-emerald-50' },
