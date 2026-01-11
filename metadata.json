@@ -1,0 +1,7 @@
+{
+  "name": "Quản lý học thêm Pro",
+  "description": "Hệ thống quản lý dạy thêm, học thêm tích hợp AI Gemini, hỗ trợ nhập liệu Excel và đồng bộ hóa quy trình điểm danh, tính phí.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
