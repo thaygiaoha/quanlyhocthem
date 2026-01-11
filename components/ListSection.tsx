@@ -16,6 +16,13 @@ const ListSection: React.FC<ListSectionProps> = ({ data }) => {
     (s.name && s.name.toLowerCase().includes(searchTerm.toLowerCase())) || 
     (s.school && s.school.toLowerCase().includes(searchTerm.toLowerCase()))
   );
+  // Tính tiền trực tiếp để hiển thị
+
+const attendedCount = student.attendance ? student.attendance.filter(v => v === 1).length : 0;
+
+const classFee = data.fees.find(f => f.className === selectedClass)?.fee || 0;
+
+const displayAmount = attendedCount * classFee;
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
@@ -83,7 +90,7 @@ const ListSection: React.FC<ListSectionProps> = ({ data }) => {
                   <p className="text-[10px] text-amber-600 uppercase font-bold mb-1 flex items-center gap-1">
                     <CreditCard size={12} className="text-amber-500" /> Học phí
                   </p>
-                  <p className="font-bold text-indigo-600">{formatCurrency(student.totalAmount)}</p>
+                 <p className="font-bold text-indigo-600">{formatCurrency(displayAmount)}</p>
                 </div>
               </div>
 
