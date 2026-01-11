@@ -23,7 +23,6 @@ const Dashboard: React.FC<DashboardProps> = ({ data }) => {
     data.sheets[key].students && data.sheets[key].students.length > 0
   );
   
-  // Tính tổng doanh thu thông minh
   const totalRevenue = classSheets.reduce((acc, sheet) => {
     const classConfig = data.fees.find(f => f.className === sheet.className);
     const unitFee = classConfig ? classConfig.fee : 0;
@@ -40,19 +39,18 @@ const Dashboard: React.FC<DashboardProps> = ({ data }) => {
     { label: 'Dự tính học phí', value: new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(totalRevenue), icon: Wallet, color: 'text-amber-600', bg: 'bg-amber-50' },
     { 
       label: 'Lớp hoạt động', 
-      // Phần render lớp hoạt động chia dòng (Tối đa 2 lớp/dòng)
       value: (
-        <div className=\"text-sm flex flex-col gap-1 mt-1\">
+        <div className="text-sm flex flex-col gap-1 mt-1">
           {activeClasses.length > 0 ? (
             activeClasses.reduce((acc: string[][], curr, i) => {
               if (i % 2 === 0) acc.push(activeClasses.slice(i, i + 2));
               return acc;
             }, []).map((pair, idx) => (
-              <div key={idx} className=\"font-bold text-slate-700\">
+              <div key={idx} className="font-bold text-slate-700">
                 {pair.map(cls => formatClassName(cls)).join(', ')}
               </div>
             ))
-          ) : <span className=\"font-bold\">Trống</span>}
+          ) : <span className="font-bold text-slate-400 italic">Trống</span>}
         </div>
       ), 
       icon: Clock, 
@@ -62,20 +60,19 @@ const Dashboard: React.FC<DashboardProps> = ({ data }) => {
   ];
 
   return (
-    <div className=\"space-y-6 animate-in fade-in duration-500\">
-      <div className=\"grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4\">
+    <div className="space-y-6 animate-in fade-in duration-500">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat, i) => {
           const Icon = stat.icon;
           return (
-            <div key={i} className=\"bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4\">
+            <div key={i} className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4">
               <div className={`${stat.bg} ${stat.color} p-4 rounded-xl`}>
                 <Icon size={24} />
               </div>
-              <div className=\"overflow-hidden\">
-                <p className=\"text-xs font-medium text-slate-500 uppercase tracking-wider\">{stat.label}</p>
-                {/* Nếu value là chuỗi thì hiện kiểu cũ, nếu là Component (như Lớp hoạt động) thì hiện trực tiếp */}
+              <div className="overflow-hidden">
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{stat.label}</p>
                 {typeof stat.value === 'string' || typeof stat.value === 'number' ? (
-                  <p className=\"text-xl font-bold text-slate-800\">{stat.value}</p>
+                  <p className="text-xl font-bold text-slate-800">{stat.value}</p>
                 ) : (
                   stat.value
                 )}
@@ -85,42 +82,42 @@ const Dashboard: React.FC<DashboardProps> = ({ data }) => {
         })}
       </div>
 
-      <div className=\"grid grid-cols-1 lg:grid-cols-2 gap-6\">
-        <div className=\"bg-white p-6 rounded-2xl shadow-sm border border-slate-100\">
-          <h3 className=\"text-lg font-bold text-slate-800 mb-4\">Phân bổ học sinh thực tế</h3>
-          <div className=\"space-y-4\">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+          <h3 className="text-lg font-bold text-slate-800 mb-4">Phân bổ học sinh thực tế</h3>
+          <div className="space-y-4">
             {activeClasses.length > 0 ? 
               activeClasses.map((key) => {
               const classSheet = data.sheets[key];
               const count = classSheet.students.length;
               return (
-                <div key={key} className=\"space-y-2\">
-                  <div className=\"flex justify-between text-sm\">
-                    <span className=\"font-medium text-slate-700\">{formatClassName(classSheet.className)}</span>
-                    <span className=\"text-slate-500 font-bold\">{count} học sinh</span>
+                <div key={key} className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="font-medium text-slate-700">{formatClassName(classSheet.className)}</span>
+                    <span className="text-slate-500 font-bold">{count} học sinh</span>
                   </div>
-                  <div className=\"w-full bg-slate-100 h-2 rounded-full overflow-hidden\">
+                  <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
                     <div 
-                      className=\"bg-indigo-500 h-full rounded-full transition-all duration-700\" 
+                      className="bg-indigo-500 h-full rounded-full transition-all duration-700" 
                       style={{ width: `${(count / (totalStudents || 1)) * 100}%` }}
                     ></div>
                   </div>
                 </div>
               );
-            }) : <p className=\"text-slate-400 text-center py-8 italic\">Chưa có dữ liệu học sinh</p>}
+            }) : <p className="text-slate-400 text-center py-8 italic">Chưa có dữ liệu học sinh</p>}
           </div>
         </div>
 
-        <div className=\"bg-white p-6 rounded-2xl shadow-sm border border-slate-100\">
-          <h3 className=\"text-lg font-bold text-slate-800 mb-4\">Ghi chú & Trạng thái</h3>
-          <div className=\"space-y-3\">
-            <div className=\"flex gap-3 p-3 bg-blue-50 border border-blue-100 rounded-xl\">
-              <div className=\"text-blue-500\"><BookOpen size={20} /></div>
-              <p className=\"text-sm text-blue-700\">Dữ liệu sĩ số được cập nhật tức thì theo danh sách thực tế.</p>
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+          <h3 className="text-lg font-bold text-slate-800 mb-4">Ghi chú & Trạng thái</h3>
+          <div className="space-y-3">
+            <div className="flex gap-3 p-3 bg-blue-50 border border-blue-100 rounded-xl">
+              <div className="text-blue-500"><BookOpen size={20} /></div>
+              <p className="text-sm text-blue-700">Dữ liệu sĩ số được cập nhật tức thì.</p>
             </div>
-            <div className=\"flex gap-3 p-3 bg-emerald-50 border border-emerald-100 rounded-xl\">
-              <div className=\"text-emerald-500\"><Users size={20} /></div>
-              <p className=\"text-sm text-emerald-700\">Tự động loại bỏ dữ liệu không hợp lệ khi tải trang.</p>
+            <div className="flex gap-3 p-3 bg-emerald-50 border border-emerald-100 rounded-xl">
+              <div className="text-emerald-500"><Users size={20} /></div>
+              <p className="text-sm text-emerald-700">Tự động làm sạch dữ liệu rác khi tải trang.</p>
             </div>
           </div>
         </div>
