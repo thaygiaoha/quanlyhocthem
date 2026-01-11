@@ -1,7 +1,6 @@
-
 import React, { useState } from 'react';
 import { Search, Users, School, CreditCard, CalendarCheck } from 'lucide-react';
-import { AppData, Student } from '../types';
+import { AppData } from '../types';
 
 interface ListSectionProps {
   data: AppData;
@@ -16,13 +15,9 @@ const ListSection: React.FC<ListSectionProps> = ({ data }) => {
     (s.name && s.name.toLowerCase().includes(searchTerm.toLowerCase())) || 
     (s.school && s.school.toLowerCase().includes(searchTerm.toLowerCase()))
   );
-  // Tính tiền trực tiếp để hiển thị
 
-const attendedCount = student.attendance ? student.attendance.filter(v => v === 1).length : 0;
-
-const classFee = data.fees.find(f => f.className === selectedClass)?.fee || 0;
-
-const displayAmount = attendedCount * classFee;
+  // Lấy đơn giá học phí của lớp đang chọn
+  const classFee = data.fees.find(f => f.className === selectedClass)?.fee || 0;
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
@@ -30,6 +25,7 @@ const displayAmount = attendedCount * classFee;
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
+      {/* Thanh chọn lớp và tìm kiếm */}
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex gap-2 flex-wrap">
           {["Lop9", "Lop10", "Lop11", "Lop12"].map(cls => {
@@ -61,10 +57,15 @@ const displayAmount = attendedCount * classFee;
         </div>
       </div>
 
+      {/* Danh sách học sinh */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredStudents.length > 0 ? filteredStudents.map((student) => {
-          // Tính số buổi dựa trên giá trị 1 trong mảng điểm danh
-          const attendedCount = student.attendance.filter(v => v === 1).length;
+          
+          // --- TÍNH TOÁN RIÊNG CHO TỪNG HỌC SINH TẠI ĐÂY ---
+          const attendedCount = student.attendance ? student.attendance.filter(v => v === 1).length : 0;
+          const displayAmount = attendedCount * classFee;
+          // ------------------------------------------------
+
           return (
             <div key={student.phoneNumber + student.name} className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-all group border-l-4 border-l-transparent hover:border-l-indigo-500">
               <div className="flex justify-between items-start mb-4">
@@ -90,7 +91,7 @@ const displayAmount = attendedCount * classFee;
                   <p className="text-[10px] text-amber-600 uppercase font-bold mb-1 flex items-center gap-1">
                     <CreditCard size={12} className="text-amber-500" /> Học phí
                   </p>
-                 <p className="font-bold text-indigo-600">{formatCurrency(displayAmount)}</p>
+                  <p className="font-bold text-indigo-600">{formatCurrency(displayAmount)}</p>
                 </div>
               </div>
 
