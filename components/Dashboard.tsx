@@ -41,7 +41,25 @@ const Dashboard: React.FC<DashboardProps> = ({ data }) => {
     { label: 'Tổng học sinh', value: totalStudents, icon: Users, color: 'text-blue-600', bg: 'bg-blue-50' },
     { label: 'Số lớp học', value: activeClasses.length, icon: BookOpen, color: 'text-emerald-600', bg: 'bg-emerald-50' },
     { label: 'Dự tính học phí', value: new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(totalRevenue), icon: Wallet, color: 'text-amber-600', bg: 'bg-amber-50' },
-    { label: 'Lớp hoạt động', value: activeClasses.length > 0 ? activeClasses.join(', ') : 'Trống', icon: Clock, color: 'text-purple-600', bg: 'bg-purple-50' },
+    { 
+  label: 'Lớp hoạt động', 
+  value: activeClasses.length > 0 ? (
+    <div className="grid grid-cols-1 gap-x-2">
+      {/* Cứ 2 lớp sẽ tạo thành một cụm để hiển thị */}
+      {activeClasses.reduce((acc: any[], curr, i) => {
+        if (i % 2 === 0) acc.push(activeClasses.slice(i, i + 2));
+        return acc;
+      }, []).map((pair, idx) => (
+        <div key={idx} className="whitespace-nowrap">
+          {pair.map((cls: string) => formatClassName(cls)).join(', ')}
+        </div>
+      ))}
+    </div>
+  ) : 'Trống', 
+  icon: Clock, 
+  color: 'text-purple-600', 
+  bg: 'bg-purple-50' 
+},
   ];
 
   return (
