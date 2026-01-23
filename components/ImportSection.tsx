@@ -125,46 +125,46 @@ const ImportSection: React.FC<ImportSectionProps> = ({ data, onUpdate, checkPass
   };
 
   const handleManualAdd = async () => {
-    if (!manualStudent.name || !manualStudent.class) {
-      alert('Vui lòng nhập tên và lớp!');
-      return;
-    }
+  if (!manualStudent.name || !manualStudent.class) {
+    alert('Vui lòng nhập tên và lớp!');
+    return;
+  }
 
-    const gradeKey = extractGradeFromClassName(manualStudent.class);
-    if (!["Lop9", "Lop10", "Lop11", "Lop12"].includes(gradeKey)) {
-        alert("Lớp phải thuộc khối 9, 10, 11 hoặc 12 (VD: 9A1)");
-        return;
-    }
+  // Lấy chính xác tên lớp thầy nhập (VD: "Lop10.1")
+  const gradeKey = manualStudent.class.trim(); 
 
-    const newData = { ...data };
-    if (!newData.sheets[gradeKey]) {
-      newData.sheets[gradeKey] = { className: gradeKey, students: [] };
-    }
+  const newData = { ...data };
+  
+  // Nếu chưa có "ngăn chứa" cho lớp này thì tạo mới
+  if (!newData.sheets[gradeKey]) {
+    newData.sheets[gradeKey] = { className: gradeKey, students: [] };
+  }
 
-    const newStudent: Student = {
-      stt: newData.sheets[gradeKey].students.length + 1,
-      name: manualStudent.name,
-      class: manualStudent.class,
-      school: manualStudent.school,
-      phoneNumber: manualStudent.phoneNumber,
-      note: manualStudent.note || '',
-      attendance: Array(10).fill(null),
-      totalAmount: 0
-    };
-
-    newData.sheets[gradeKey].students.push(newStudent);
-    onUpdate(newData);
-
-    setManualStudent({ name: '', class: '', school: '', phoneNumber: '' });
-    
-    if (data.sheetLink && window.confirm(`Đã thêm ${newStudent.name}. Cập nhật Cloud?`)) {
-      const flatData: any[] = [];
-      Object.keys(newData.sheets).forEach(gk => {
-        newData.sheets[gk].students.forEach(s => flatData.push({...s, gradeKey: gk}));
-      });
-      await syncToCloud(flatData);
-    }
+  const newStudent: Student = {
+    stt: newData.sheets[gradeKey].students.length + 1,
+    name: manualStudent.name,
+    class: manualStudent.class,
+    school: manualStudent.school,
+    phoneNumber: manualStudent.phoneNumber,
+    note: manualStudent.note || '', 
+    attendance: Array(10).fill(null),
+    totalAmount: 0
   };
+
+  newData.sheets[gradeKey].students.push(newStudent);
+  onUpdate(newData);
+
+  setManualStudent({ name: '', class: '', school: '', phoneNumber: '', note: '' });
+  
+  if (data.sheetLink && window.confirm(`Đã thêm ${newStudent.name} vào danh sách ${gradeKey}. Cập nhật Cloud ngay?`)) {
+    const flatData: any[] = [];
+    // Gom tất cả học sinh của TẤT CẢ các lớp để gửi lên Cloud
+    Object.keys(newData.sheets).forEach(gk => {
+      newData.sheets[gk].students.forEach(s => flatData.push({...s, gradeKey: gk}));
+    });
+    await syncToCloud(flatData);
+  }
+};
 
   if (!isAuthorized) {
     return (
