@@ -266,7 +266,7 @@ const ImportSection: React.FC<ImportSectionProps> = ({ data, onUpdate, checkPass
       />
     </div>
 
-    {/* PHẦN THÊM MỚI: Ghi chú / Nhóm lớp */}
+   {/* PHẦN THÊM MỚI: Ghi chú / Nhóm lớp */}
     <div>
       <label className="text-xs font-bold text-indigo-500 uppercase mb-1 block flex justify-between">
         Ghi chú (Tên Sheet riêng)
@@ -280,52 +280,61 @@ const ImportSection: React.FC<ImportSectionProps> = ({ data, onUpdate, checkPass
         className="w-full px-4 py-3 rounded-xl border border-indigo-100 focus:ring-2 focus:ring-indigo-500 outline-none bg-indigo-50/30 font-bold text-indigo-600 placeholder:font-normal"
       />
     </div>
-  </div>
 
-  
-  {/* 1. Sổ chọn danh sách trường */}
-  <select 
-    value={
-      ["THPT Yên Dũng số 2", "THPT Yên Dũng số 1", "THCS Xuân Phú"].includes(manualStudent.school) 
-      ? manualStudent.school 
-      : (manualStudent.school === "" ? "" : "other")
-    }
-    onChange={(e) => {
-      const val = e.target.value;
-      if (val === "other") {
-        setManualStudent({...manualStudent, school: "Trường khác"}); // Reset về chữ Trường khác để gợi ý
-      } else {
-        setManualStudent({...manualStudent, school: val});
-      }
-    }}
-    className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 outline-none bg-slate-50/50 mb-2"
-  >
-    <option value="">-- Chọn trường của bạn --</option>
-    <option value="THPT Yên Dũng số 2">THPT Yên Dũng số 2</option>
-    <option value="THPT Yên Dũng số 1">THPT Yên Dũng số 1</option>
-    <option value="THCS Xuân Phú">THCS Xuân Phú</option>
-    <option value="other">Trường khác...</option>
-  </select>
-
-  {/* 2. Ô nhập tay (Chỉ hiện khi chọn 'other' hoặc nhập giá trị không có trong danh sách) */}
-  {(!["THPT Yên Dũng số 2", "THPT Yên Dũng số 1", "THCS Xuân Phú", ""].includes(manualStudent.school) || manualStudent.school === "Trường khác") && (
-    <div className="animate-in fade-in slide-in-from-top-2 duration-300">
-      <input 
-        type="text" 
-        placeholder="Nhập tên trường của bạn..." 
-        value={manualStudent.school === "Trường khác" ? "" : manualStudent.school}
-        onChange={(e) => setManualStudent({...manualStudent, school: e.target.value})}
-        className="w-full px-4 py-3 rounded-xl border-2 border-emerald-100 focus:ring-2 focus:ring-emerald-500 outline-none bg-white shadow-inner"
-        autoFocus
-      />
-      <p className="text-[10px] text-emerald-600 mt-1 ml-1 font-medium italic">* Thầy cô/Học sinh vui lòng nhập đầy đủ tên trường.</p>
+    {/* 1. Sổ chọn danh sách trường */}
+    <div className="pt-2">
+      <label className="text-xs font-bold text-slate-400 uppercase mb-1 block">Chọn trường học nhanh</label>
+      <select 
+        value={
+          ["THPT Yên Dũng số 2", "THPT Yên Dũng số 1", "THCS Xuân Phú"].includes(manualStudent.school) 
+          ? manualStudent.school 
+          : (manualStudent.school === "" ? "" : "other")
+        }
+        onChange={(e) => {
+          const val = e.target.value;
+          if (val === "other") {
+            setManualStudent({...manualStudent, school: "Trường khác"}); 
+          } else {
+            setManualStudent({...manualStudent, school: val});
+          }
+        }}
+        className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 outline-none bg-slate-50/50"
+      >
+        <option value="">-- Chọn trường của bạn --</option>
+        <option value="THPT Yên Dũng số 2">THPT Yên Dũng số 2</option>
+        <option value="THPT Yên Dũng số 1">THPT Yên Dũng số 1</option>
+        <option value="THCS Xuân Phú">THCS Xuân Phú</option>
+        <option value="other">Trường khác...</option>
+      </select>
     </div>
-  )}
-</div>
-            <button onClick={handleManualAdd} className="w-full bg-emerald-600 text-white py-4 rounded-2xl font-bold hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-100 mt-2">Thêm và cập nhật</button>
-          </div>
-        </div>
+
+    {/* 2. Ô nhập tay trường khác */}
+    {(!["THPT Yên Dũng số 2", "THPT Yên Dũng số 1", "THCS Xuân Phú", ""].includes(manualStudent.school) || manualStudent.school === "Trường khác") && (
+      <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+        <input 
+          type="text" 
+          placeholder="Nhập tên trường của bạn..." 
+          value={manualStudent.school === "Trường khác" ? "" : manualStudent.school}
+          onChange={(e) => setManualStudent({...manualStudent, school: e.target.value})}
+          className="w-full px-4 py-3 rounded-xl border-2 border-emerald-100 focus:ring-2 focus:ring-emerald-500 outline-none bg-white shadow-inner"
+          autoFocus
+        />
+        <p className="text-[10px] text-emerald-600 mt-1 ml-1 font-medium italic">* Thầy cô/Học sinh vui lòng nhập đầy đủ tên trường.</p>
       </div>
+    )}
+
+    {/* Nút bấm lưu học sinh */}
+    <button 
+      onClick={handleManualAdd} 
+      className="w-full bg-emerald-600 text-white py-4 rounded-2xl font-bold hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-100 mt-2"
+    >
+      Thêm và cập nhật
+    </button>
+  </div> {/* Đóng space-y-4 */}
+</div> {/* Đóng khung trắng của Thêm thủ công */}
+
+{/* Kết thúc các khối Layout chính */}
+      </div> 
     </div>
   );
 };
