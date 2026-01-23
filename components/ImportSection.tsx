@@ -281,7 +281,7 @@ const ImportSection: React.FC<ImportSectionProps> = ({ data, onUpdate, checkPass
       />
     </div>
   </div>
-</div>
+
   
   {/* 1. Sổ chọn danh sách trường */}
   <select 
