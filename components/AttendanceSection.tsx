@@ -65,8 +65,8 @@ const AttendanceSection: React.FC<AttendanceSectionProps> = ({ data, onUpdate, c
         phoneNumber: student.phoneNumber,
         isPresent: isPresent,
         totalAmount: student.totalAmount,
-        // THÊM DÒNG NÀY: Gửi ghi chú (tên sheet riêng) lên Script
-        note: student.school // Giả sử trong App dữ liệu "Ghi chú" đang được lưu vào trường này hoặc s.note
+        // SỬA Ở ĐÂY: Gửi selectedClass để Script biết chính xác sheet nào cần ghi
+        note: selectedClass 
       };
     });
 
