@@ -120,27 +120,32 @@ const AttendanceSection: React.FC<AttendanceSectionProps> = ({ data, onUpdate, c
   );
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500">
-      <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-        <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2 text-indigo-600">
-          <CheckSquare /> Chọn lớp điểm danh hôm nay
-        </h3>
-        <div className="flex flex-wrap gap-3">
-          {["Lop9", "Lop10", "Lop11", "Lop12"].map(className => (
-            <button
-              key={className}
-              onClick={() => handleSelectClass(className)}
-              className={`px-6 py-3 rounded-xl font-bold transition-all border ${
-                selectedClass === className 
-                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200 border-indigo-600' 
-                : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100 hover:border-slate-300'
-              }`}
-            >
-              {className}
-            </button>
-          ))}
-        </div>
-      </div>
+   <div className="space-y-6 animate-in fade-in duration-500">
+  <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+    <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2 text-indigo-600">
+      <CheckSquare /> Chọn lớp điểm danh hôm nay
+    </h3>
+    
+    <div className="flex flex-wrap gap-3">
+      {Object.keys(data.sheets)
+        .filter(name => name.startsWith("Lop")) 
+        .sort((a, b) => a.localeCompare(b, undefined, {numeric: true})) 
+        .map(className => (
+          <button
+            key={className}
+            onClick={() => handleSelectClass(className)}
+            className={`px-6 py-3 rounded-xl font-bold transition-all border ${
+              selectedClass === className 
+              ? 'bg-indigo-600 text-white shadow-lg scale-105' 
+              : 'bg-white text-slate-600 border-slate-200 hover:border-indigo-400 hover:bg-indigo-50/30'
+            }`}
+          >
+            {/* Biến Lop10.1 thành Lớp 10.1 */}
+            {className.replace("Lop", "Lớp ")}
+          </button>
+        ))}
+    </div>
+  </div>
 
       {selectedClass && (
         <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden animate-in slide-in-from-bottom-4">
