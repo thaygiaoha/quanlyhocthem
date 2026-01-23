@@ -270,12 +270,12 @@ const ImportSection: React.FC<ImportSectionProps> = ({ data, onUpdate, checkPass
    {/* PHẦN THÊM MỚI: Ghi chú / Nhóm lớp */}
     <div>
       <label className="text-xs font-bold text-indigo-500 uppercase mb-1 block flex justify-between">
-        Ghi chú (Tên Sheet riêng)
-        <span className="text-[9px] text-slate-400 normal-case font-normal italic">* Để trống nếu ghi vào sheet lớp chính</span>
+        Ghi chú (Tên Sheet riêng để điểm danh)
+        <span className="text-[9px] text-slate-400 normal-case font-normal italic">* Ví dụ: Lop10.1</span>
       </label>
       <input 
         type="text" 
-        placeholder="VD: Lop10.1" 
+        placeholder="Để trống nếu thuộc sheet mặc định" 
         value={manualStudent.note || ''}
         onChange={(e) => setManualStudent({...manualStudent, note: e.target.value})}
         className="w-full px-4 py-3 rounded-xl border border-indigo-100 focus:ring-2 focus:ring-indigo-500 outline-none bg-indigo-50/30 font-bold text-indigo-600 placeholder:font-normal"
@@ -320,7 +320,7 @@ const ImportSection: React.FC<ImportSectionProps> = ({ data, onUpdate, checkPass
           className="w-full px-4 py-3 rounded-xl border-2 border-emerald-100 focus:ring-2 focus:ring-emerald-500 outline-none bg-white shadow-inner"
           autoFocus
         />
-        <p className="text-[10px] text-emerald-600 mt-1 ml-1 font-medium italic">* Thầy cô/Học sinh vui lòng nhập đầy đủ tên trường.</p>
+        <p className="text-[10px] text-emerald-600 mt-1 ml-1 font-medium italic">* Thầy cô vui lòng nhập đầy đủ tên trường.</p>
       </div>
     )}
 
@@ -332,9 +332,7 @@ const ImportSection: React.FC<ImportSectionProps> = ({ data, onUpdate, checkPass
       Thêm và cập nhật
     </button>
   </div> {/* Đóng space-y-4 */}
-</div> {/* Đóng khung trắng của Thêm thủ công */}
-
-{/* Kết thúc các khối Layout chính */}
+</div> {/* Đóng khung trắng bg-white p-6 */}
       </div> 
     </div>
   );
