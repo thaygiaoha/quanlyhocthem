@@ -28,23 +28,32 @@ const ListSection: React.FC<ListSectionProps> = ({ data }) => {
       {/* Thanh chọn lớp và tìm kiếm */}
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex gap-2 flex-wrap">
-          {["Lop9", "Lop10", "Lop11", "Lop12"].map(cls => {
-            const studentCount = data.sheets[cls]?.students.length || 0;
-            return (
-              <button
-                key={cls}
-                onClick={() => setSelectedClass(cls)}
-                className={`px-4 py-2 rounded-xl text-sm font-bold transition-all border ${
-                  selectedClass === cls 
-                  ? 'bg-indigo-600 text-white shadow-md border-indigo-600' 
-                  : 'bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200'
-                }`}
-              >
-                {cls} <span className={`ml-1 px-1.5 py-0.5 rounded-md text-[10px] ${selectedClass === cls ? 'bg-white/20' : 'bg-slate-300 text-slate-700'}`}>{studentCount}</span>
-              </button>
-            );
-          })}
-        </div>
+  {Object.keys(data.sheets)
+    .filter(cls => cls.startsWith("Lop")) // Chỉ lấy các sheet có tên bắt đầu bằng "Lop"
+    .sort((a, b) => a.localeCompare(b, undefined, { numeric: true })) // Sắp xếp 9, 10, 10.1...
+    .map(cls => {
+      const studentCount = data.sheets[cls]?.students.length || 0;
+      return (
+        <button
+          key={cls}
+          onClick={() => setSelectedClass(cls)}
+          className={`px-4 py-2 rounded-xl text-sm font-bold transition-all border ${
+            selectedClass === cls 
+            ? 'bg-indigo-600 text-white shadow-md border-indigo-600' 
+            : 'bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200'
+          }`}
+        >
+          {/* Biến Lop10.1 thành Lớp 10.1 cho đẹp */}
+          {cls.replace("Lop", "Lớp ")} 
+          <span className={`ml-1 px-1.5 py-0.5 rounded-md text-[10px] ${
+            selectedClass === cls ? 'bg-white/20' : 'bg-slate-300 text-slate-700'
+          }`}>
+            {studentCount}
+          </span>
+        </button>
+      );
+    })}
+</div>
         <div className="relative w-full md:w-72">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
           <input 
