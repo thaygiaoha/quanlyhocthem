@@ -39,7 +39,7 @@ const AttendanceSection: React.FC<AttendanceSectionProps> = ({ data, onUpdate, c
     setAttendanceMap(prev => ({ ...prev, [key]: !prev[key] }));
   };
 
-  const handleSave = async (syncCloud: boolean = false) => {
+ const handleSave = async (syncCloud: boolean = false) => {
     if (!selectedClass) return;
 
     const newData = { ...data };
@@ -51,12 +51,10 @@ const AttendanceSection: React.FC<AttendanceSectionProps> = ({ data, onUpdate, c
       const isPresent = attendanceMap[student.phoneNumber + student.name];
       const val = isPresent ? 1 : 0;
       
-      // Tìm ô trống đầu tiên trong mảng điểm danh (null)
       const nextIdx = student.attendance.findIndex(v => v === null);
       if (nextIdx !== -1) {
         student.attendance[nextIdx] = val;
       } else {
-        // Nếu đã đầy 10 buổi, ghi đè vào buổi cuối hoặc bỏ qua
         student.attendance[9] = val;
       }
       
@@ -66,12 +64,13 @@ const AttendanceSection: React.FC<AttendanceSectionProps> = ({ data, onUpdate, c
         name: student.name,
         phoneNumber: student.phoneNumber,
         isPresent: isPresent,
-        totalAmount: student.totalAmount
+        totalAmount: student.totalAmount,
+        // THÊM DÒNG NÀY: Gửi ghi chú (tên sheet riêng) lên Script
+        note: student.school // Giả sử trong App dữ liệu "Ghi chú" đang được lưu vào trường này hoặc s.note
       };
     });
 
     onUpdate(newData);
-
     if (syncCloud && data.sheetLink) {
         setSyncing(true);
         try {
