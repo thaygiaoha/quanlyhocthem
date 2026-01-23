@@ -85,39 +85,49 @@ const ImportSection: React.FC<ImportSectionProps> = ({ data, onUpdate, checkPass
 
       const newData = { ...data };
       const flatList: any[] = [];
-      const tempSheets: { [key: string]: Student[] } = { ...data.sheets };
+     const tempSheets: { [key: string]: Student[] } = {};
 
       jsonData.slice(1).forEach((row: any) => {
-  const studentName = String(row['B'] || '').trim();
-  if (!studentName || studentName.includes("68686868")) return;
+      const studentName = String(row['B'] || '').trim();
+      if (!studentName || studentName.includes("68686868")) return;
 
-  const studentClass = String(row['C'] || '');
-  
-  const newStudent: Student = {
-    stt: 0, // Script sẽ tự đánh lại STT
-    name: studentName,
-    class: studentClass,
-    school: String(row['D'] || ''),
-    phoneNumber: String(row['E'] || ''), // Cột E
-    note: String(row['F'] || '').trim(), // Lấy dữ liệu cột F (note) để điều hướng
-    attendance: Array(10).fill(null),
-    totalAmount: 0
-  };
-  
-  // Xác định gradeKey để App hiển thị đúng tab lớp
-  const gradeKey = extractGradeFromClassName(studentClass);
-  if (tempSheets[gradeKey]) {
-    tempSheets[gradeKey].push(newStudent);
-    flatList.push({ ...newStudent, gradeKey });
-  }
-});
-
-      // Cập nhật state
-      Object.keys(tempSheets).forEach(grade => {
-        newData.sheets[grade] = { className: grade, students: tempSheets[grade] };
-      });
+      const studentClass = String(row['C'] || '');
+      const noteValue = String(row['F'] || '').trim();
       
-      onUpdate(newData);
+      // QUAN TRỌNG: Xác định lớp dựa trên cột F (Ghi chú), nếu trống thì lấy theo khối lớp (C)
+      let gradeKey = "";
+      if (noteValue !== "") {
+        gradeKey = noteValue; // VD: Lop10.1
+      } else {
+        gradeKey = extractGradeFromClassName(studentClass); // VD: Lop10
+      }
+
+      // Tự động tạo ngăn chứa cho lớp mới nếu chưa tồn tại
+      if (!tempSheets[gradeKey]) {
+        tempSheets[gradeKey] = [];
+      }
+
+      const newStudent: Student = {
+        stt: 0,
+        name: studentName,
+        class: studentClass,
+        school: String(row['D'] || ''),
+        phoneNumber: String(row['E'] || ''),
+        note: noteValue,
+        attendance: Array(10).fill(null),
+        totalAmount: 0
+      };
+
+      tempSheets[gradeKey].push(newStudent);
+      flatList.push({ ...newStudent, gradeKey });
+    });
+
+    // Cập nhật lại toàn bộ sheets vào App
+    Object.keys(tempSheets).forEach(grade => {
+      newData.sheets[grade] = { className: grade, students: tempSheets[grade] };
+    });
+    
+    onUpdate(newData);
       if (data.sheetLink && window.confirm("Đã nhập xong. Bạn có muốn cập nhật Cloud ngay không? (Hành động này sẽ làm mới danh sách điểm danh trên Sheet)")) {
         await syncToCloud(flatList);
       }
