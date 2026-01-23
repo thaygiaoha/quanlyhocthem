@@ -88,27 +88,29 @@ const ImportSection: React.FC<ImportSectionProps> = ({ data, onUpdate, checkPass
       const tempSheets: { [key: string]: Student[] } = { "Lop9": [], "Lop10": [], "Lop11": [], "Lop12": [] };
 
       jsonData.slice(1).forEach((row: any) => {
-        const studentName = String(row['B'] || '').trim();
-        // Lọc bỏ rác
-        if (!studentName || studentName.includes("68686868")) return;
+  const studentName = String(row['B'] || '').trim();
+  if (!studentName || studentName.includes("68686868")) return;
 
-        const studentClass = String(row['C'] || '');
-        const gradeKey = extractGradeFromClassName(studentClass);
-        if (!tempSheets[gradeKey]) return;
-
-        const newStudent: Student = {
-          stt: tempSheets[gradeKey].length + 1,
-          name: studentName,
-          class: studentClass,
-          school: String(row['D'] || ''),
-          phoneNumber: String(row['E'] || ''),
-          note: String(row['F'] || '').trim(),
-          attendance: Array(10).fill(null), // Import mới sẽ làm mới mảng điểm danh
-          totalAmount: 0
-         };
-        tempSheets[gradeKey].push(newStudent);
-        flatList.push({ ...newStudent, gradeKey });
-      });
+  const studentClass = String(row['C'] || '');
+  
+  const newStudent: Student = {
+    stt: 0, // Script sẽ tự đánh lại STT
+    name: studentName,
+    class: studentClass,
+    school: String(row['D'] || ''),
+    phoneNumber: String(row['E'] || ''), // Cột E
+    note: String(row['F'] || '').trim(), // Lấy dữ liệu cột F (note) để điều hướng
+    attendance: Array(10).fill(null),
+    totalAmount: 0
+  };
+  
+  // Xác định gradeKey để App hiển thị đúng tab lớp
+  const gradeKey = extractGradeFromClassName(studentClass);
+  if (tempSheets[gradeKey]) {
+    tempSheets[gradeKey].push(newStudent);
+    flatList.push({ ...newStudent, gradeKey });
+  }
+});
 
       // Cập nhật state
       Object.keys(tempSheets).forEach(grade => {
