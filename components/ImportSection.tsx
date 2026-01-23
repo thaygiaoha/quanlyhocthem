@@ -103,7 +103,8 @@ const ImportSection: React.FC<ImportSectionProps> = ({ data, onUpdate, checkPass
           school: String(row['D'] || ''),
           phoneNumber: String(row['E'] || ''),
           attendance: Array(10).fill(null), // Import mới sẽ làm mới mảng điểm danh
-          totalAmount: 0
+          totalAmount: 0,
+          note: ''
         };
         tempSheets[gradeKey].push(newStudent);
         flatList.push({ ...newStudent, gradeKey });
