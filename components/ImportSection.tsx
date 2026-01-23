@@ -85,7 +85,7 @@ const ImportSection: React.FC<ImportSectionProps> = ({ data, onUpdate, checkPass
 
       const newData = { ...data };
       const flatList: any[] = [];
-      const tempSheets: { [key: string]: Student[] } = { "Lop9": [], "Lop10": [], "Lop11": [], "Lop12": [] };
+      const tempSheets: { [key: string]: Student[] } = { ...data.sheets };
 
       jsonData.slice(1).forEach((row: any) => {
   const studentName = String(row['B'] || '').trim();
