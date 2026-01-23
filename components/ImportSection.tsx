@@ -221,38 +221,67 @@ const ImportSection: React.FC<ImportSectionProps> = ({ data, onUpdate, checkPass
         </div>
 
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-          <h3 className="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
-            <Plus className="text-emerald-500" /> Thêm học sinh thủ công
-          </h3>
-          <div className="space-y-4">
-            <div>
-               <label className="text-xs font-bold text-slate-400 uppercase mb-1 block">Họ và tên</label>
-               <input 
-                type="text" placeholder="Nguyễn Văn A" value={manualStudent.name}
-                onChange={(e) => setManualStudent({...manualStudent, name: e.target.value})}
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 outline-none bg-slate-50/50"
-               />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                 <label className="text-xs font-bold text-slate-400 uppercase mb-1 block">Lớp (VD: 9A1)</label>
-                 <input 
-                  type="text" placeholder="9A1" value={manualStudent.class}
-                  onChange={(e) => setManualStudent({...manualStudent, class: e.target.value})}
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 outline-none bg-slate-50/50"
-                 />
-              </div>
-              <div>
-                 <label className="text-xs font-bold text-slate-400 uppercase mb-1 block">Số điện thoại</label>
-                 <input 
-                  type="text" placeholder="09xxx" value={manualStudent.phoneNumber}
-                  onChange={(e) => setManualStudent({...manualStudent, phoneNumber: e.target.value})}
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 outline-none bg-slate-50/50"
-                 />
-              </div>
-            </div>
-            <div className="space-y-3">
-  <label className="text-xs font-bold text-slate-400 uppercase mb-1 block">Trường học</label>
+  <h3 className="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
+    <Plus className="text-emerald-500" /> Thêm học sinh thủ công
+  </h3>
+  <div className="space-y-4">
+    {/* Họ và tên */}
+    <div>
+       <label className="text-xs font-bold text-slate-400 uppercase mb-1 block">Họ và tên</label>
+       <input 
+        type="text" placeholder="Nguyễn Văn A" value={manualStudent.name}
+        onChange={(e) => setManualStudent({...manualStudent, name: e.target.value})}
+        className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 outline-none bg-slate-50/50"
+       />
+    </div>
+
+    <div className="grid grid-cols-2 gap-4">
+      {/* Lớp */}
+      <div>
+         <label className="text-xs font-bold text-slate-400 uppercase mb-1 block">Lớp (VD: 9A1)</label>
+         <input 
+          type="text" placeholder="9A1" value={manualStudent.class}
+          onChange={(e) => setManualStudent({...manualStudent, class: e.target.value})}
+          className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 outline-none bg-slate-50/50"
+         />
+      </div>
+      {/* Số điện thoại */}
+      <div>
+         <label className="text-xs font-bold text-slate-400 uppercase mb-1 block">Số điện thoại</label>
+         <input 
+          type="text" placeholder="09xxx" value={manualStudent.phoneNumber}
+          onChange={(e) => setManualStudent({...manualStudent, phoneNumber: e.target.value})}
+          className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 outline-none bg-slate-50/50"
+         />
+      </div>
+    </div>
+
+    {/* Trường học */}
+    <div>
+      <label className="text-xs font-bold text-slate-400 uppercase mb-1 block">Trường học</label>
+      <input 
+        type="text" placeholder="THPT Chuyên..." value={manualStudent.school}
+        onChange={(e) => setManualStudent({...manualStudent, school: e.target.value})}
+        className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 outline-none bg-slate-50/50"
+      />
+    </div>
+
+    {/* PHẦN THÊM MỚI: Ghi chú / Nhóm lớp */}
+    <div>
+      <label className="text-xs font-bold text-indigo-500 uppercase mb-1 block flex justify-between">
+        Ghi chú (Tên Sheet riêng)
+        <span className="text-[9px] text-slate-400 normal-case font-normal italic">* Để trống nếu ghi vào sheet lớp chính</span>
+      </label>
+      <input 
+        type="text" 
+        placeholder="VD: Lop10.1" 
+        value={manualStudent.note || ''}
+        onChange={(e) => setManualStudent({...manualStudent, note: e.target.value})}
+        className="w-full px-4 py-3 rounded-xl border border-indigo-100 focus:ring-2 focus:ring-indigo-500 outline-none bg-indigo-50/30 font-bold text-indigo-600 placeholder:font-normal"
+      />
+    </div>
+  </div>
+</div>
   
   {/* 1. Sổ chọn danh sách trường */}
   <select 
