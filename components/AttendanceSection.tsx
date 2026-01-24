@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { CheckSquare, Lock, Save, Search, CheckCircle2, XCircle, CloudUpload, Loader2 } from 'lucide-react';
 import { AppData } from '../types';
@@ -39,11 +38,12 @@ const AttendanceSection: React.FC<AttendanceSectionProps> = ({ data, onUpdate, c
     setAttendanceMap(prev => ({ ...prev, [key]: !prev[key] }));
   };
 
- const handleSave = async (syncCloud: boolean = false) => {
+  const handleSave = async (syncCloud: boolean = false) => {
     if (!selectedClass) return;
 
     const newData = { ...data };
     const classSheet = newData.sheets[selectedClass];
+    // Tìm cấu hình học phí cho lớp này (VD: Lop10.1)
     const feeConfig = data.fees.find(f => f.className === selectedClass);
     const currentFee = feeConfig ? feeConfig.fee : 0;
 
@@ -64,25 +64,25 @@ const AttendanceSection: React.FC<AttendanceSectionProps> = ({ data, onUpdate, c
         name: student.name,
         phoneNumber: student.phoneNumber,
         isPresent: isPresent,
-        totalAmount: student.totalAmount,
-        // SỬA Ở ĐÂY: Gửi selectedClass để Script biết chính xác sheet nào cần ghi
-        note: selectedClass 
+        totalAmount: student.totalAmount
       };
     });
 
     onUpdate(newData);
+
     if (syncCloud && data.sheetLink) {
-        setSyncing(true);
-        try {
-            await syncAttendanceToSheet(data.sheetLink, selectedClass, studentsToSync);
-            alert('Đã lưu và đồng bộ Google Sheet thành công!');
-        } catch (err) {
-            alert('Lỗi khi đồng bộ Cloud. Vui lòng thử lại.');
-        } finally {
-            setSyncing(false);
-        }
+      setSyncing(true);
+      try {
+        // Gửi chính xác selectedClass (Ví dụ: "Lop10.1") lên Script
+        await syncAttendanceToSheet(data.sheetLink, selectedClass, studentsToSync);
+        alert(`Đã lưu và đồng bộ lên sheet "${selectedClass}" thành công!`);
+      } catch (err) {
+        alert('Lỗi khi đồng bộ Cloud. Vui lòng thử lại.');
+      } finally {
+        setSyncing(false);
+      }
     } else {
-        alert('Đã lưu điểm danh cục bộ!');
+      alert('Đã lưu điểm danh cục bộ!');
     }
     
     setSelectedClass('');
@@ -113,6 +113,7 @@ const AttendanceSection: React.FC<AttendanceSectionProps> = ({ data, onUpdate, c
     );
   }
 
+  // Lọc danh sách học sinh theo tìm kiếm
   const currentStudents = data.sheets[selectedClass]?.students || [];
   const filteredStudents = currentStudents.filter(s => 
     s.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -120,38 +121,38 @@ const AttendanceSection: React.FC<AttendanceSectionProps> = ({ data, onUpdate, c
   );
 
   return (
-   <div className="space-y-6 animate-in fade-in duration-500">
-  <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-    <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2 text-indigo-600">
-      <CheckSquare /> Chọn lớp điểm danh hôm nay
-    </h3>
-    
-    <div className="flex flex-wrap gap-3">
-      {Object.keys(data.sheets)
-        .filter(name => name.startsWith("Lop")) 
-        .sort((a, b) => a.localeCompare(b, undefined, {numeric: true})) 
-        .map(className => (
-          <button
-            key={className}
-            onClick={() => handleSelectClass(className)}
-            className={`px-6 py-3 rounded-xl font-bold transition-all border ${
-              selectedClass === className 
-              ? 'bg-indigo-600 text-white shadow-lg scale-105' 
-              : 'bg-white text-slate-600 border-slate-200 hover:border-indigo-400 hover:bg-indigo-50/30'
-            }`}
-          >
-            {/* Biến Lop10.1 thành Lớp 10.1 */}
-            {className.replace("Lop", "Lớp ")}
-          </button>
-        ))}
-    </div>
-  </div>
+    <div className="space-y-6 animate-in fade-in duration-500">
+      <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+        <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2 text-indigo-600">
+          <CheckSquare /> Chọn lớp điểm danh hôm nay
+        </h3>
+        
+        <div className="flex flex-wrap gap-3">
+          {Object.keys(data.sheets)
+            .filter(name => name.startsWith("Lop")) 
+            .sort((a, b) => a.localeCompare(b, undefined, {numeric: true})) 
+            .map(className => (
+              <button
+                key={className}
+                onClick={() => handleSelectClass(className)}
+                className={`px-6 py-3 rounded-xl font-bold transition-all border ${
+                  selectedClass === className 
+                  ? 'bg-indigo-600 text-white shadow-lg scale-105' 
+                  : 'bg-white text-slate-600 border-slate-200 hover:border-indigo-400 hover:bg-indigo-50/30'
+                }`}
+              >
+                {className.replace("Lop", "Lớp ")}
+                <span className="ml-2 text-xs opacity-60">({data.sheets[className].students.length})</span>
+              </button>
+            ))}
+        </div>
+      </div>
 
       {selectedClass && (
         <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden animate-in slide-in-from-bottom-4">
           <div className="p-6 border-b border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4 bg-slate-50/50">
             <div>
-              <h3 className="text-xl font-bold text-slate-800">Lớp: {selectedClass}</h3>
+              <h3 className="text-xl font-bold text-slate-800">Đang điểm danh: {selectedClass.replace("Lop", "Lớp ")}</h3>
               <p className="text-sm text-slate-500">Sĩ số: {currentStudents.length} học sinh</p>
             </div>
             <div className="flex items-center gap-4 w-full md:w-auto">
@@ -161,7 +162,7 @@ const AttendanceSection: React.FC<AttendanceSectionProps> = ({ data, onUpdate, c
                   type="text"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder="Tìm học sinh..."
+                  placeholder="Tìm học sinh trong lớp..."
                   className="pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 w-full text-sm"
                 />
               </div>
@@ -170,8 +171,8 @@ const AttendanceSection: React.FC<AttendanceSectionProps> = ({ data, onUpdate, c
                   disabled={syncing || !data.sheetLink}
                   className="bg-emerald-600 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-emerald-700 flex items-center gap-2 transition-all shadow-md shadow-emerald-100 disabled:opacity-50"
               >
-                  {syncing ? <Loader2 size={18} className="animate-spin" /> : <CloudUpload size={18} />} 
-                  Lưu & Đồng bộ
+                {syncing ? <Loader2 size={18} className="animate-spin" /> : <CloudUpload size={18} />} 
+                Lưu & Đồng bộ
               </button>
             </div>
           </div>
@@ -218,7 +219,7 @@ const AttendanceSection: React.FC<AttendanceSectionProps> = ({ data, onUpdate, c
                 }) : (
                   <tr>
                     <td colSpan={4} className="px-6 py-20 text-center text-slate-400 italic bg-white">
-                      Không tìm thấy học sinh nào.
+                      Không tìm thấy học sinh nào trong lớp này.
                     </td>
                   </tr>
                 )}
