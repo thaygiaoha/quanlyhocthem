@@ -74,11 +74,11 @@ const App: React.FC = () => {
 
   // 5. Tự động đồng bộ nhẹ khi vừa mở App nếu đã có Link
   useEffect(() => {
-    if (data.sheetLink) {
-      // Thầy có thể gọi refreshDataFromCloud ở đây nếu muốn mở App là tự cập nhật
-      // refreshDataFromCloud(data.sheetLink); 
-    }
-  }, []);
+  if (data.sheetLink) {
+    // Tự động kéo dữ liệu từ Google Sheets về mỗi khi mở App
+    refreshDataFromCloud(data.sheetLink);
+  }
+}, []); // Chạy đúng 1 lần khi load trang
 
   const checkPassword = (input: string): boolean => {
     return input === data.passwordC2;
