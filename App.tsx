@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { ViewMode, AppData } from './types';
 import { getAppData, saveAppData } from './services/storage';
@@ -15,30 +14,28 @@ import ListSection from './components/ListSection';
 
 const App: React.FC = () => {
   const [view, setView] = useState<ViewMode>(ViewMode.DASHBOARD);
+  
+  // 1. Khởi tạo dữ liệu: Ưu tiên lấy từ máy (localStorage), nếu không có mới dùng getAppData()
   const [data, setData] = useState<AppData>(() => {
-  // 1. Kiểm tra xem trong "ổ cứng" trình duyệt có dữ liệu cũ không
-  const saved = localStorage.getItem('hocphi_data');
-  
-  if (saved) {
-    try {
-      // 2. Nếu có, đọc ra và dùng luôn (sẽ có đầy đủ Lop10.1, 10.5...)
-      return JSON.parse(saved);
-    } catch (e) {
-      console.error("Lỗi dữ liệu:", e);
+    const saved = localStorage.getItem('hocphi_data');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error("Lỗi dữ liệu LocalStorage:", e);
+      }
     }
-  }
-  
-  // 3. Nếu không có (lần đầu dùng), thì mới dùng hàm getAppData() cũ của thầy
-  return getAppData(); 
-});
+    return getAppData(); 
+  });
 
+  // 2. Mỗi khi data thay đổi, tự động lưu vào dịch vụ storage (nếu có dùng backend)
   useEffect(() => {
     saveAppData(data);
   }, [data]);
 
+  // 3. Hàm cập nhật dữ liệu chuẩn: Vừa cập nhật giao diện, vừa lưu vào máy ngay lập tức
   const handleUpdateData = (newData: AppData) => {
     localStorage.setItem('hocphi_data', JSON.stringify(newData));
-};
     setData(newData);
   };
 
