@@ -15,13 +15,30 @@ import ListSection from './components/ListSection';
 
 const App: React.FC = () => {
   const [view, setView] = useState<ViewMode>(ViewMode.DASHBOARD);
-  const [data, setData] = useState<AppData>(getAppData());
+  const [data, setData] = useState<AppData>(() => {
+  // 1. Kiểm tra xem trong "ổ cứng" trình duyệt có dữ liệu cũ không
+  const saved = localStorage.getItem('hocphi_data');
+  
+  if (saved) {
+    try {
+      // 2. Nếu có, đọc ra và dùng luôn (sẽ có đầy đủ Lop10.1, 10.5...)
+      return JSON.parse(saved);
+    } catch (e) {
+      console.error("Lỗi dữ liệu:", e);
+    }
+  }
+  
+  // 3. Nếu không có (lần đầu dùng), thì mới dùng hàm getAppData() cũ của thầy
+  return getAppData(); 
+});
 
   useEffect(() => {
     saveAppData(data);
   }, [data]);
 
   const handleUpdateData = (newData: AppData) => {
+    localStorage.setItem('hocphi_data', JSON.stringify(newData));
+};
     setData(newData);
   };
 
