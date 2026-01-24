@@ -71,42 +71,36 @@ const ImportSection: React.FC<ImportSectionProps> = ({ data, onUpdate, checkPass
   };
 
   const processExcel = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const file = e.target.files?.[0];
+  if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = async (evt) => {
-      const bstr = evt.target?.result;
-      const wb = XLSX.read(bstr, { type: 'binary' });
-      const ws = wb.Sheets[wb.SheetNames[0]];
-      const jsonData = XLSX.utils.sheet_to_json(ws, { header: 'A' }) as any[];
+  const reader = new FileReader();
+  reader.onload = async (evt) => {
+    const bstr = evt.target?.result;
+    const wb = XLSX.read(bstr, { type: 'binary' });
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    const jsonData = XLSX.utils.sheet_to_json(ws, { header: 'A' }) as any[];
 
-      const newData = { ...data };
-      const flatList: any[] = [];
-     const tempSheets: { [key: string]: Student[] } = {};
+    // SỬA TẠI ĐÂY: Lấy dữ liệu sheets hiện tại ra để nạp thêm vào, không tạo mới trống rỗng
+    const updatedSheets = { ...data.sheets }; 
+    const flatList: any[] = [];
 
-      jsonData.slice(1).forEach((row: any) => {
+    jsonData.slice(1).forEach((row: any) => {
       const studentName = String(row['B'] || '').trim();
       if (!studentName || studentName.includes("68686868")) return;
 
       const studentClass = String(row['C'] || '');
       const noteValue = String(row['F'] || '').trim();
       
-      // QUAN TRỌNG: Xác định lớp dựa trên cột F (Ghi chú), nếu trống thì lấy theo khối lớp (C)
-      let gradeKey = "";
-      if (noteValue !== "") {
-        gradeKey = noteValue; // VD: Lop10.1
-      } else {
-        gradeKey = extractGradeFromClassName(studentClass); // VD: Lop10
-      }
+      let gradeKey = noteValue !== "" ? noteValue : extractGradeFromClassName(studentClass);
 
-      // Tự động tạo ngăn chứa cho lớp mới nếu chưa tồn tại
-      if (!tempSheets[gradeKey]) {
-        tempSheets[gradeKey] = [];
+      // Nếu lớp này chưa có trong danh sách, tạo ngăn chứa mới
+      if (!updatedSheets[gradeKey]) {
+        updatedSheets[gradeKey] = { className: gradeKey, students: [] };
       }
 
       const newStudent: Student = {
-        stt: 0,
+        stt: updatedSheets[gradeKey].students.length + 1, // Đánh số thứ tự tiếp nối
         name: studentName,
         class: studentClass,
         school: String(row['D'] || ''),
@@ -116,23 +110,24 @@ const ImportSection: React.FC<ImportSectionProps> = ({ data, onUpdate, checkPass
         totalAmount: 0
       };
 
-      tempSheets[gradeKey].push(newStudent);
+      updatedSheets[gradeKey].students.push(newStudent);
       flatList.push({ ...newStudent, gradeKey });
     });
 
-    // Cập nhật lại toàn bộ sheets vào App
-    Object.keys(tempSheets).forEach(grade => {
-      newData.sheets[grade] = { className: grade, students: tempSheets[grade] };
-    });
+    // Cập nhật AppData mới
+    const newData = { ...data, sheets: updatedSheets };
     
+    // SỬA TẠI ĐÂY: Lưu thẳng vào LocalStorage để máy "nhớ" ngay lập tức
+    localStorage.setItem('hocphi_data', JSON.stringify(newData));
     onUpdate(newData);
-      if (data.sheetLink && window.confirm("Đã nhập xong. Bạn có muốn cập nhật Cloud ngay không? (Hành động này sẽ làm mới danh sách điểm danh trên Sheet)")) {
-        await syncToCloud(flatList);
-      }
-    };
-    reader.readAsBinaryString(file);
-    e.target.value = '';
+
+    if (data.sheetLink && window.confirm("Đã nhập xong. Cập nhật Cloud ngay không?")) {
+      await syncToCloud(flatList);
+    }
   };
+  reader.readAsBinaryString(file);
+  e.target.value = '';
+};
 
   const handleManualAdd = async () => {
   if (!manualStudent.name || !manualStudent.class) {
