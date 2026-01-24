@@ -15,7 +15,7 @@ import ListSection from './components/ListSection';
 const App: React.FC = () => {
   const [view, setView] = useState<ViewMode>(ViewMode.DASHBOARD);
   
-  // 1. Khởi tạo dữ liệu: Ưu tiên lấy từ máy (localStorage), nếu không có mới dùng getAppData()
+  // 1. Khởi tạo dữ liệu: Ưu tiên lấy từ LocalStorage
   const [data, setData] = useState<AppData>(() => {
     const saved = localStorage.getItem('hocphi_data');
     if (saved) {
@@ -28,41 +28,57 @@ const App: React.FC = () => {
     return getAppData(); 
   });
 
-  // 2. Mỗi khi data thay đổi, tự động lưu vào dịch vụ storage (nếu có dùng backend)
+  // 2. Hàm kéo dữ liệu từ tất cả các Sheet về App
+  const refreshDataFromCloud = async (link: string) => {
+    try {
+      // Gọi fetch trực tiếp đến link script (Script của thầy trả về JSON cho toàn bộ các lớp)
+      const response = await fetch(link);
+      const cloudData = await response.json();
+      
+      if (cloudData && cloudData.sheets) {
+        const updatedData = { 
+          ...data, 
+          sheets: cloudData.sheets, 
+          passwordC2: cloudData.password || data.passwordC2,
+          sheetLink: link 
+        };
+        setData(updatedData);
+        localStorage.setItem('hocphi_data', JSON.stringify(updatedData));
+        alert("Đồng bộ thành công! Đã tải dữ liệu các lớp từ Google Sheets.");
+      }
+    } catch (err) {
+      console.error("Lỗi đồng bộ:", err);
+      alert("Không thể tải dữ liệu. Thầy kiểm tra lại Link Script đã Deploy đúng chưa nhé.");
+    }
+  };
+
+  // 3. Hàm cập nhật dữ liệu khi Settings hoặc Attendance thay đổi
+  const handleUpdateData = async (newData: AppData) => {
+    // Nếu vừa đổi link ở Settings, tự động hỏi để kéo dữ liệu
+    if (newData.sheetLink && newData.sheetLink !== data.sheetLink) {
+      setData(newData);
+      localStorage.setItem('hocphi_data', JSON.stringify(newData));
+      if (window.confirm("Phát hiện Link Script mới. Tải dữ liệu từ Google Sheets về máy này?")) {
+        await refreshDataFromCloud(newData.sheetLink);
+      }
+    } else {
+      setData(newData);
+      localStorage.setItem('hocphi_data', JSON.stringify(newData));
+    }
+  };
+
+  // 4. Tự động lưu dữ liệu mỗi khi state data thay đổi
   useEffect(() => {
     saveAppData(data);
   }, [data]);
 
-  // 3. Hàm cập nhật dữ liệu chuẩn: Vừa cập nhật giao diện, vừa lưu vào máy ngay lập tức
- const handleUpdateData = async (newData: AppData) => {
-  setData(newData);
-  localStorage.setItem('hocphi_data', JSON.stringify(newData));
-
-  // Nếu thầy vừa dán Link Script vào, hãy tự động kéo dữ liệu về
-  if (newData.sheetLink && newData.sheetLink !== data.sheetLink) {
-    if (window.confirm("Phát hiện Link Script mới. Bạn có muốn tải toàn bộ dữ liệu từ Google Sheets về máy này không?")) {
-      await refreshDataFromCloud(newData.sheetLink);
+  // 5. Tự động đồng bộ nhẹ khi vừa mở App nếu đã có Link
+  useEffect(() => {
+    if (data.sheetLink) {
+      // Thầy có thể gọi refreshDataFromCloud ở đây nếu muốn mở App là tự cập nhật
+      // refreshDataFromCloud(data.sheetLink); 
     }
-  }
-};
-
-// Hàm kéo dữ liệu từ tất cả các Sheet về App
-const refreshDataFromCloud = async (link: string) => {
-  try {
-    const response = await fetch(link + "?action=getFullData");
-    const cloudData = await response.json();
-    
-    if (cloudData && cloudData.sheets) {
-      const updatedData = { ...data, sheets: cloudData.sheets, sheetLink: link };
-      setData(updatedData);
-      localStorage.setItem('hocphi_data', JSON.stringify(updatedData));
-      alert("Đồng bộ thành công! Các lớp 10.1, 10.2... đã được tải về.");
-    }
-  } catch (err) {
-    console.error("Lỗi đồng bộ:", err);
-    alert("Không thể tải dữ liệu. Thầy kiểm tra lại Link Script hoặc quyền truy cập nhé.");
-  }
-};
+  }, []);
 
   const checkPassword = (input: string): boolean => {
     return input === data.passwordC2;
