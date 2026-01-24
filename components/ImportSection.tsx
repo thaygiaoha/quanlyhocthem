@@ -26,19 +26,19 @@ const ImportSection: React.FC<ImportSectionProps> = ({ data, onUpdate, checkPass
       alert('Sai mật khẩu! Vui lòng kiểm tra ô C2 sheet hocphi.');
     }
   };
-  const handleClearData = () => {
-  if (window.confirm("XÓA TOÀN BỘ học sinh trong ứng dụng? (Hành động này không xóa trên Google Sheets)")) {
+ const handleClearData = () => {
+  if (window.confirm("XÓA TOÀN BỘ học sinh?")) {
     const newData = { ...data };
     
-    // Duyệt qua tất cả các sheet hiện có (Lop9, Lop10, Lop10.1...) và làm rỗng mảng học sinh
-    Object.keys(newData.sheets).forEach(className => {
-      newData.sheets[className].students = [];
+    // Chỉ giữ lại tên lớp, xóa sạch mảng students
+    Object.keys(newData.sheets).forEach(key => {
+      newData.sheets[key].students = [];
     });
 
     onUpdate(newData);
-    alert("Đã làm sạch danh sách của tất cả các lớp!");
+    alert("Đã làm sạch danh sách nhưng vẫn giữ các lớp hiện tại!");
   }
-};  
+};
   const downloadTemplate = () => {
     const templateData = [
       { "STT": 1, "Họ và Tên": "Nguyễn Văn A", "Lớp": "9A1", "Trường": "THCS Chu Văn An", "Số điện thoại": "0912345678" }
