@@ -167,7 +167,13 @@ const AttendanceSection: React.FC<AttendanceSectionProps> = ({ data, onUpdate, c
                 />
               </div>
               <button 
-                  onClick={() => handleSave(true)}
+                 onClick={() => window.location.reload()} // Cách nhanh nhất để kích hoạt useEffect lấy data mới
+                className="bg-blue-50 text-blue-600 px-4 py-2.5 rounded-xl font-bold hover:bg-blue-100 flex items-center gap-2 transition-all border border-blue-200">
+                <Loader2 size={18} /> Làm mới danh sách
+              </button>
+
+<button 
+  onClick={() => handleSave(true)}
                   disabled={syncing || !data.sheetLink}
                   className="bg-emerald-600 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-emerald-700 flex items-center gap-2 transition-all shadow-md shadow-emerald-100 disabled:opacity-50"
               >
